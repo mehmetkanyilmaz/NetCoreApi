@@ -1,8 +1,12 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +18,20 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         private IProductDal _productDal;
+
         public ProductManager(IProductDal productDal)
         {
             _productDal = productDal;
         }
-        public IResult Add(Product product)
+
+        [ValidationAspect(typeof(ProductValidator))]
+        public IDataResult<Product> Add(Product product)
         {
-            throw new NotImplementedException();
+            var result = _productDal.Add(product);
+            if (result == null)
+                return new ErrorDataResult<Product>(Messages.ProductAddError);
+
+            return new SuccessDataResult<Product>(result);
         }
 
         public IResult Delete(Product product)

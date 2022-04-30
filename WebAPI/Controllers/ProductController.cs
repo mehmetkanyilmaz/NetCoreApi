@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,16 @@ namespace WebAPI.Controllers
             }
 
             return BadRequest(result.Message);
+        }
+
+        [HttpPost("productadd")]
+        public IActionResult ProductAdd(Product product)
+        {
+            var result = _productService.Add(product);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Data);
         }
     }
 }
