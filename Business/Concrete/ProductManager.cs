@@ -3,6 +3,7 @@ using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -27,7 +28,13 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]
         public IDataResult<Product> Add(Product product)
         {
+            IResult businessRules = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfProductCountOfCategoryCorrect(product.CategoryId));
+
+            if (businessRules != null)
+                return new ErrorDataResult<Product>(businessRules.Message);
+
             var result = _productDal.Add(product);
+
             if (result == null)
                 return new ErrorDataResult<Product>(Messages.ProductAddError);
 
@@ -62,6 +69,28 @@ namespace Business.Concrete
         public IResult Update(Product product)
         {
             throw new NotImplementedException();
+        }
+
+        //Aynı isim ile birden fazla ürün olmasını engelleyen iş kuralı
+        private IResult CheckIfProductNameExists(string productName)
+        {
+            var result = _productDal.GetList(x => x.ProductName == productName).Any();
+
+            if (result)
+                return new ErrorResult(Messages.ProductNameAlreadyExists);
+
+            return new SuccessResult();
+        }
+
+        //İlgili kategoride 10 dan fazla ürün olmasını engelleyen iş kuralı
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            var result = _productDal.GetList(x => x.CategoryId == categoryId).Count();
+
+            if (result >= 10)
+                return new ErrorResult(Messages.CheckIfProductCountOfCategoryCorrect);
+
+            return new SuccessResult();
         }
     }
 }

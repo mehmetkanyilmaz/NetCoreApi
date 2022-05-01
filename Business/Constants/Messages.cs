@@ -12,6 +12,8 @@ namespace Business.Constants
         public static string ProductAdded = "Ürün başarıyla eklendi";
         public static string ProductAddError = "Ürün eklenemedi";
         public static string ProductListError = "Ürünler listelenemedi";
+        public static string ProductNameAlreadyExists = "Ürün adı kullanılmaktadır";
+        public static string CheckIfProductCountOfCategoryCorrect = "İlgili kategoride ürün sayısı sınırına ulaşıldı";
 
         public static string UserAddSuccess = "Kullanıcı eklenemedi";
         public static string UserAddError = "Kullanıcı eklenemedi";
@@ -24,6 +26,6 @@ namespace Business.Constants
         public static string UserAlreadyExists = "Bu kullanıcı zaten mevcut";
         public static string UserRegistired = "Kullanıcı başarıyla kaydedildi";
 
-        public static string AccessTokenCreated = "Access token başarıyla oluşturuldu.";
+        public static string AccessTokenCreated = "Access token başarıyla oluşturuldu";
     }
 }
