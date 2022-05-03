@@ -14,6 +14,7 @@ namespace Business.Abstract
         IDataResult<List<Product>> GetList();
         IDataResult<List<Product>> GetListByCategoriy(int categoriyId);
         IDataResult<Product> Add(Product product);
+        IDataResult<Product> AddTransactionalTest(Product product);
         IResult Delete(Product product);
         IResult Update(Product product);
     }

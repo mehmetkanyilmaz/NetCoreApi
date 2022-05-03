@@ -33,6 +33,19 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpGet("getbyid")]
+        [Authorize(Roles = "Product.List")]
+        public IActionResult GetById(int id)
+        {
+            var result = _productService.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
         [HttpGet("getlistbycategoriy")]
         public IActionResult GetListByCategoriy(int categoryId)
         {

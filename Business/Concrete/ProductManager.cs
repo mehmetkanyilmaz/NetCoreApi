@@ -1,6 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
+using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Business;
@@ -26,6 +29,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IDataResult<Product> Add(Product product)
         {
             IResult businessRules = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfProductCountOfCategoryCorrect(product.CategoryId));
@@ -41,16 +45,29 @@ namespace Business.Concrete
             return new SuccessDataResult<Product>(result);
         }
 
+        [TransactionScopeAspect]
+        public IDataResult<Product> AddTransactionalTest(Product product)
+        {
+            //Bu metod oluşabilecek bir hata sonucu işlemlerin transaction aspect ile geri alındığını test etmek için oluşturulmuştur.
+            Add(product);
+            throw new Exception("");
+            Add(product);
+        }
+
         public IResult Delete(Product product)
         {
             throw new NotImplementedException();
         }
 
+        [CacheAspect]
+        [PerformanceAspect(1)]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(x => x.ProductId == productId));
         }
 
+        [CacheAspect]
+        [PerformanceAspect(3)]
         public IDataResult<List<Product>> GetList()
         {
             var result = _productDal.GetList();
@@ -66,6 +83,8 @@ namespace Business.Concrete
             throw new NotImplementedException();
         }
 
+        [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             throw new NotImplementedException();
